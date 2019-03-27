@@ -64,7 +64,7 @@ protected:
 	*called via input to look up/down at a given rate
 	*@param Rate This is a normalized rate, i.e 1.0 means 100% of desired turn rate 
 	*/ 
-	void TurnUpAtRate(float Rate);
+	void LookUpAtRate(float Rate);
 	
 	/**
 	 Resets HMD orientation in VR. 
@@ -78,10 +78,12 @@ protected:
 	
 	*/
 protected:
+	
+
+public:	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

@@ -7,7 +7,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "Components/InputComponent.h"
+#include "Components/ActorComponent.h"
+#include "Engine/World.h"
 
 // Sets default values
 AMyCharacter::AMyCharacter()
@@ -69,13 +71,57 @@ void AMyCharacter::Tick(float DeltaTime)
 void AMyCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 
-	
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	//setup gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &AMyCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AMyCharacter::MoveRight);
+
+	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
+	// "turn" handles devices that provide an absolute delta, such as a mouse.
+	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AMyCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AMyCharacter::LookUpAtRate);
 
 
-
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+}
+void AMyCharacter::TurnAtRate(float Rate) {
+	//calculate delta for this frame from the rate information
+	AddControllerYawInput(Rate* baseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
+void AMyCharacter::LookUpAtRate(float Rate) {
+	//calculate delta for this frame from the rate information
+	AddControllerPitchInput(Rate * baseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMyCharacter::MoveForward(float value) {
+	if ((Controller != NULL) && (value != 0.0f)) {
+		//find out which way is forward
+		const FRotator rotation = Controller->GetControlRotation();
+		const FRotator YawRotaion(0, rotation.Yaw, 0);
+
+		//get forward vector
+		const FVector direction = FRotationMatrix(YawRotaion).GetUnitAxis(EAxis::X);
+		AddMovementInput(direction, value);
+
+	}
+}
+
+void AMyCharacter::MoveRight(float value) {
+	if ((Controller != NULL) && (value != 0)) {
+		//find out which way is right 
+		const FRotator rotation = Controller->GetControlRotation();
+		const FRotator yawRotation(0, rotation.Yaw, 0);
+
+		//get right vector
+		const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+		AddMovementInput(direction, value);
+	}
+}

@@ -16,11 +16,11 @@
 	},
 	"BuildProducts": [
 		{
-			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-prototype-3959.dll",
+			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-prototype-3037.dll",
 			"Type": "DynamicLibrary"
 		},
 		{
-			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-prototype-3959.pdb",
+			"Path": "$(ProjectDir)/Binaries/Win64/UE4Editor-prototype-3037.pdb",
 			"Type": "SymbolFile"
 		},
 		{
